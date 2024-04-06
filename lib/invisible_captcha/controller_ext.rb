@@ -21,7 +21,7 @@ module InvisibleCaptcha
     def detect_spam(options = {})
       if timestamp_spam?(options)
         on_timestamp_spam(options)
-        return if performed?
+        return true if performed?
       end
 
       if honeypot_spam?(options) || spinner_spam?
@@ -55,7 +55,7 @@ module InvisibleCaptcha
 
       return false unless enabled
 
-      timestamp = session.delete(:invisible_captcha_timestamp)
+      timestamp = session[:invisible_captcha_timestamp]
 
       # Consider as spam if timestamp not in session, cause that means the form was not fetched at all
       unless timestamp
@@ -69,6 +69,7 @@ module InvisibleCaptcha
       # Consider as spam if form submitted too quickly
       if time_to_submit < threshold
         warn_spam("Timestamp threshold not reached (took #{time_to_submit.to_i}s).")
+        session.delete(:invisible_captcha_timestamp)
         return true
       end
 
