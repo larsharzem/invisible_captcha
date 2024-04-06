@@ -69,7 +69,6 @@ module InvisibleCaptcha
       # Consider as spam if form submitted too quickly
       if time_to_submit < threshold
         warn_spam("Timestamp threshold not reached (took #{time_to_submit.to_i}s).")
-        session.delete(:invisible_captcha_timestamp)
         return true
       end
 
